@@ -1,0 +1,48 @@
+{
+  "name": "logdot",
+  "version": "1.0.0",
+  "description": "LogDot SDK for Node.js - Cloud logging and metrics",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "logging",
+    "metrics",
+    "cloud",
+    "monitoring",
+    "logdot",
+    "observability"
+  ],
+  "author": "LogDot",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logdot/logdot-node"
+  },
+  "homepage": "https://logdot.io",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0",
+    "vitest": "^1.0.0"
+  }
+}
