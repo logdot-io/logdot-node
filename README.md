@@ -6,8 +6,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/logdot"><img src="https://img.shields.io/npm/v/logdot?style=flat-square&color=blue" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/logdot"><img src="https://img.shields.io/npm/dm/logdot?style=flat-square" alt="npm downloads"></a>
+  <a href="https://www.npmjs.com/package/@logdot-io/sdk"><img src="https://img.shields.io/npm/v/@logdot-io/sdk?style=flat-square&color=blue" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@logdot-io/sdk"><img src="https://img.shields.io/npm/dm/@logdot-io/sdk?style=flat-square" alt="npm downloads"></a>
   <a href="https://github.com/logdot-io/logdot-node/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square" alt="Node.js 18+"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-ready-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"></a>
@@ -35,13 +35,13 @@
 ## Installation
 
 ```bash
-npm install logdot
+npm install @logdot-io/sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { LogDotLogger, LogDotMetrics } from 'logdot';
+import { LogDotLogger, LogDotMetrics } from '@logdot-io/sdk';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // LOGGING
