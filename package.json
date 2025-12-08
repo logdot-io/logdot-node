@@ -1,6 +1,6 @@
 {
   "name": "@logdot-io/sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LogDot SDK for Node.js - Cloud logging and metrics",
   "publishConfig": {
     "access": "public"
