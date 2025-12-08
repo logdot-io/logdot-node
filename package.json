@@ -1,6 +1,6 @@
 {
   "name": "@logdot-io/sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LogDot SDK for Node.js - Cloud logging and metrics",
   "publishConfig": {
     "access": "public"
@@ -14,8 +14,9 @@
   ],
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
