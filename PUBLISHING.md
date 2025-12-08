@@ -1,12 +1,13 @@
 # Publishing LogDot Node.js SDK to npm
 
-This guide covers publishing the LogDot SDK to the npm registry.
+This guide covers publishing the LogDot SDK (`@logdot-io/sdk`) to the npm registry.
 
 ## Prerequisites
 
 1. **npm Account**: Create an account at [npmjs.com](https://www.npmjs.com/signup)
-2. **npm CLI**: Ensure npm is installed (`npm --version`)
-3. **Authentication**: Log in to npm CLI
+2. **npm Organization**: Create the `logdot-io` org at [npmjs.com/org/create](https://www.npmjs.com/org/create)
+3. **npm CLI**: Ensure npm is installed (`npm --version`)
+4. **Authentication**: Log in to npm CLI
 
 ```bash
 npm login
@@ -75,9 +76,9 @@ These commands automatically:
 npm publish
 ```
 
-### To npm with Public Access (for scoped packages)
+### To npm with Public Access (Required for @logdot-io/sdk)
 
-If using a scoped package name (e.g., `@logdot/sdk`):
+Since this is a scoped package (`@logdot-io/sdk`), you must use public access:
 
 ```bash
 npm publish --access public
@@ -92,17 +93,17 @@ npm publish --access public
 npm link
 
 # In a test project
-npm link logdot
+npm link @logdot-io/sdk
 ```
 
 ### Test with npm pack
 
 ```bash
 npm pack
-# Creates logdot-1.0.0.tgz
+# Creates logdot-io-sdk-1.0.0.tgz
 
 # In a test project
-npm install ../path/to/logdot-1.0.0.tgz
+npm install ../path/to/logdot-io-sdk-1.0.0.tgz
 ```
 
 ## Unpublishing (Emergency Only)
@@ -110,13 +111,13 @@ npm install ../path/to/logdot-1.0.0.tgz
 You can unpublish within 72 hours of publishing:
 
 ```bash
-npm unpublish logdot@1.0.0
+npm unpublish @logdot-io/sdk@1.0.0
 ```
 
 **Warning**: Unpublishing is discouraged. Use `npm deprecate` instead:
 
 ```bash
-npm deprecate logdot@1.0.0 "Critical bug, please upgrade to 1.0.1"
+npm deprecate @logdot-io/sdk@1.0.0 "Critical bug, please upgrade to 1.0.1"
 ```
 
 ## CI/CD Publishing (Optional)
@@ -153,8 +154,8 @@ jobs:
 ### "You must be logged in to publish"
 Run `npm login` and enter your credentials.
 
-### "Package name already exists"
-Choose a different name or use a scoped package (`@yourorg/logdot`).
+### "Scope not found"
+Ensure the `logdot-io` npm organization exists. Create it at [npmjs.com/org/create](https://www.npmjs.com/org/create).
 
 ### "Cannot publish over existing version"
 Bump the version number before publishing.
