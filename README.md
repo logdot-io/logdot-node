@@ -1,17 +1,36 @@
-# LogDot SDK for Node.js
+<p align="center">
+  <h1 align="center">LogDot SDK for Node.js</h1>
+  <p align="center">
+    <strong>Cloud logging and metrics made simple</strong>
+  </p>
+</p>
 
-Official Node.js SDK for [LogDot](https://logdot.io) - Cloud logging and metrics made simple.
+<p align="center">
+  <a href="https://www.npmjs.com/package/logdot"><img src="https://img.shields.io/npm/v/logdot?style=flat-square&color=blue" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/logdot"><img src="https://img.shields.io/npm/dm/logdot?style=flat-square" alt="npm downloads"></a>
+  <a href="https://github.com/logdot-io/logdot-node/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square" alt="Node.js 18+"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-ready-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"></a>
+</p>
+
+<p align="center">
+  <a href="https://logdot.io">Website</a> •
+  <a href="https://docs.logdot.io">Documentation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#api-reference">API Reference</a>
+</p>
+
+---
 
 ## Features
 
-- **Separate Clients**: Independent logger and metrics clients for flexibility
-- **Context-Aware Logging**: Create loggers with persistent context that's automatically added to all logs
-- **Type-Safe**: Full TypeScript support with comprehensive type definitions
-- **Flexible Logging**: 4 log levels (debug, info, warn, error) with structured tags
-- **Entity-Based Metrics**: Create/find entities, then bind to them for sending metrics
-- **Batch Operations**: Efficiently send multiple logs or metrics in a single request
-- **Automatic Retry**: Exponential backoff retry with configurable attempts
-- **Zero Dependencies**: Uses native Node.js fetch (Node 18+)
+- **Separate Clients** — Independent logger and metrics clients for maximum flexibility
+- **Context-Aware Logging** — Create loggers with persistent context that automatically flows through your application
+- **Type-Safe** — Full TypeScript support with comprehensive type definitions
+- **Entity-Based Metrics** — Create/find entities, then bind to them for organized metric collection
+- **Batch Operations** — Efficiently send multiple logs or metrics in a single request
+- **Automatic Retry** — Exponential backoff retry with configurable attempts
+- **Zero Dependencies** — Uses native Node.js fetch (Node 18+)
 
 ## Installation
 
@@ -24,7 +43,9 @@ npm install logdot
 ```typescript
 import { LogDotLogger, LogDotMetrics } from 'logdot';
 
-// === LOGGING ===
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LOGGING
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const logger = new LogDotLogger({
   apiKey: 'ilog_live_YOUR_API_KEY',
   hostname: 'my-service',
@@ -33,7 +54,9 @@ const logger = new LogDotLogger({
 await logger.info('Application started');
 await logger.error('Something went wrong', { error_code: 500 });
 
-// === METRICS ===
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// METRICS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const metrics = new LogDotMetrics({
   apiKey: 'ilog_live_YOUR_API_KEY',
 });
@@ -54,23 +77,20 @@ await metricsClient.send('response_time', 123.45, 'ms');
 ### Configuration
 
 ```typescript
-import { LogDotLogger } from 'logdot';
-
 const logger = new LogDotLogger({
-  // Required
-  apiKey: 'ilog_live_YOUR_API_KEY',
-  hostname: 'my-service',
+  apiKey: 'ilog_live_YOUR_API_KEY',  // Required
+  hostname: 'my-service',             // Required
 
-  // Optional - defaults shown
-  timeout: 5000,                 // HTTP timeout (ms)
-  retryAttempts: 3,              // Max retry attempts
-  retryDelayMs: 1000,            // Base retry delay (ms)
-  retryMaxDelayMs: 30000,        // Max retry delay (ms)
-  debug: false,                  // Enable debug output
+  // Optional settings
+  timeout: 5000,            // HTTP timeout (ms)
+  retryAttempts: 3,         // Max retry attempts
+  retryDelayMs: 1000,       // Base retry delay (ms)
+  retryMaxDelayMs: 30000,   // Max retry delay (ms)
+  debug: false,             // Enable debug output
 });
 ```
 
-### Basic Logging
+### Log Levels
 
 ```typescript
 await logger.debug('Debug message');
@@ -79,7 +99,7 @@ await logger.warn('Warning message');
 await logger.error('Error message');
 ```
 
-### Logging with Tags
+### Structured Tags
 
 ```typescript
 await logger.info('User logged in', {
@@ -87,147 +107,77 @@ await logger.info('User logged in', {
   ip_address: '192.168.1.1',
   browser: 'Chrome',
 });
-
-await logger.error('Database connection failed', {
-  host: 'db.example.com',
-  port: 5432,
-  error: 'Connection timeout',
-});
 ```
 
 ### Context-Aware Logging
 
-Create loggers with persistent context that's automatically added to all logs:
+Create loggers with persistent context that automatically flows through your application:
 
 ```typescript
-const logger = new LogDotLogger({
-  apiKey: 'ilog_live_YOUR_API_KEY',
-  hostname: 'my-service',
-});
-
 // Create a logger with context for a specific request
 const requestLogger = logger.withContext({
   request_id: 'abc-123',
   user_id: 456,
 });
 
-// All logs from requestLogger will include request_id and user_id
+// All logs include request_id and user_id automatically
 await requestLogger.info('Processing request');
 await requestLogger.debug('Fetching user data');
-await requestLogger.info('Request completed');
 
-// You can chain contexts - they merge together
+// Chain contexts — they merge together
 const detailedLogger = requestLogger.withContext({
   operation: 'checkout',
 });
 
-// This log will have request_id, user_id, AND operation
+// This log has request_id, user_id, AND operation
 await detailedLogger.info('Starting checkout process');
-
-// Original logger is unchanged
-await logger.info('This log has no context');
-```
-
-### Context with Additional Tags
-
-When you provide tags to a log call, they're merged with the context (tags take precedence):
-
-```typescript
-const logger = new LogDotLogger({
-  apiKey: '...',
-  hostname: 'api',
-}).withContext({
-  service: 'api',
-  environment: 'production',
-});
-
-// The log will have: service, environment, endpoint, status
-await logger.info('Request handled', {
-  endpoint: '/users',
-  status: 200,
-});
-
-// Override context values if needed
-await logger.info('Custom service', {
-  service: 'worker', // This overrides the context value
-});
 ```
 
 ### Batch Logging
 
-Send multiple logs in a single HTTP request for better efficiency:
+Send multiple logs in a single HTTP request:
 
 ```typescript
-// Start batch mode
 logger.beginBatch();
 
-// Queue logs (no network calls yet)
-await logger.info('Request received');
-await logger.debug('Processing started');
-await logger.info('Processing complete');
+await logger.info('Step 1 complete');
+await logger.info('Step 2 complete');
+await logger.info('Step 3 complete');
 
-// Send all logs in one request
-await logger.sendBatch();
-
-// End batch mode
+await logger.sendBatch();  // Single HTTP request
 logger.endBatch();
 ```
 
 ## Metrics
 
-### Configuration
-
-```typescript
-import { LogDotMetrics } from 'logdot';
-
-const metrics = new LogDotMetrics({
-  // Required
-  apiKey: 'ilog_live_YOUR_API_KEY',
-
-  // Optional - defaults shown
-  timeout: 5000,                 // HTTP timeout (ms)
-  retryAttempts: 3,              // Max retry attempts
-  retryDelayMs: 1000,            // Base retry delay (ms)
-  retryMaxDelayMs: 30000,        // Max retry delay (ms)
-  debug: false,                  // Enable debug output
-});
-```
-
 ### Entity Management
 
-Before sending metrics, you need to create or find an entity:
-
 ```typescript
+const metrics = new LogDotMetrics({ apiKey: '...' });
+
 // Create a new entity
 const entity = await metrics.createEntity({
   name: 'my-service',
-  description: 'My production service',
-  metadata: {
-    environment: 'production',
-    region: 'us-east-1',
-    version: '1.2.3',
-  },
+  description: 'Production API server',
+  metadata: { environment: 'production', region: 'us-east-1' },
 });
 
-// Or find an existing entity by name
+// Find existing entity
 const existing = await metrics.getEntityByName('my-service');
 
-// Or get or create (finds existing, creates if not found)
+// Get or create (recommended)
 const entity = await metrics.getOrCreateEntity({
   name: 'my-service',
   description: 'Created if not exists',
 });
 ```
 
-### Binding to an Entity
-
-Once you have an entity, bind to it for sending metrics:
+### Sending Metrics
 
 ```typescript
-const entity = await metrics.getOrCreateEntity({ name: 'my-service' });
 const metricsClient = metrics.forEntity(entity.id);
 
-// Now send metrics
+// Single metric
 await metricsClient.send('cpu_usage', 45.2, 'percent');
 await metricsClient.send('response_time', 123.45, 'ms', {
   endpoint: '/api/users',
@@ -235,77 +185,24 @@ await metricsClient.send('response_time', 123.45, 'ms', {
 });
 ```
 
-### Batch Metrics (Same Metric)
-
-Send multiple values for the same metric:
+### Batch Metrics
 
 ```typescript
-// Start batch for a specific metric
+// Same metric, multiple values
 metricsClient.beginBatch('temperature', 'celsius');
-
-// Add values
 metricsClient.add(23.5);
 metricsClient.add(24.1);
 metricsClient.add(23.8);
-metricsClient.add(24.5);
-
-// Send all values in one request
 await metricsClient.sendBatch();
-
-// End batch mode
 metricsClient.endBatch();
-```
 
-### Multi-Metric Batch
-
-Send different metrics in a single request:
-
-```typescript
-// Start multi-metric batch
+// Multiple different metrics
 metricsClient.beginMultiBatch();
-
-// Add different metrics
 metricsClient.addMetric('cpu_usage', 45.2, 'percent');
 metricsClient.addMetric('memory_used', 2048, 'MB');
 metricsClient.addMetric('disk_free', 50.5, 'GB');
-
-// Send all metrics in one request
 await metricsClient.sendBatch();
-
-// End batch mode
 metricsClient.endBatch();
-```
-
-## Error Handling
-
-```typescript
-// Check if operations succeeded
-const logSuccess = await logger.info('Test message');
-if (!logSuccess) {
-  console.error('Failed to send log');
-}
-
-// For metrics, check last error
-const metricSuccess = await metricsClient.send('test', 1, 'unit');
-if (!metricSuccess) {
-  console.error('Failed to send metric:', metricsClient.getLastError());
-  console.error('HTTP code:', metricsClient.getLastHttpCode());
-}
-```
-
-## Debug Mode
-
-Enable debug output to see HTTP requests and responses:
-
-```typescript
-const logger = new LogDotLogger({
-  apiKey: '...',
-  hostname: 'my-service',
-  debug: true, // Enable at construction
-});
-
-// Or enable later
-logger.setDebug(true);
 ```
 
 ## API Reference
@@ -316,18 +213,12 @@ logger.setDebug(true);
 |--------|-------------|
 | `withContext(context)` | Create new logger with merged context |
 | `getContext()` | Get current context object |
-| `debug(message, tags?)` | Send debug log |
-| `info(message, tags?)` | Send info log |
-| `warn(message, tags?)` | Send warning log |
-| `error(message, tags?)` | Send error log |
-| `log(level, message, tags?)` | Send log at specified level |
+| `debug/info/warn/error(message, tags?)` | Send log at level |
 | `beginBatch()` | Start batch mode |
 | `sendBatch()` | Send queued logs |
 | `endBatch()` | End batch mode |
 | `clearBatch()` | Clear queue without sending |
 | `getBatchSize()` | Get queue size |
-| `getHostname()` | Get hostname |
-| `setDebug(enabled)` | Enable/disable debug |
 
 ### LogDotMetrics
 
@@ -335,40 +226,28 @@ logger.setDebug(true);
 |--------|-------------|
 | `createEntity(options)` | Create a new entity |
 | `getEntityByName(name)` | Find entity by name |
-| `getOrCreateEntity(options)` | Get existing or create new entity |
-| `forEntity(entityId)` | Create bound client for entity |
-| `getLastError()` | Get last error message |
-| `getLastHttpCode()` | Get last HTTP code |
-| `setDebug(enabled)` | Enable/disable debug |
+| `getOrCreateEntity(options)` | Get existing or create new |
+| `forEntity(entityId)` | Create bound metrics client |
 
-### BoundMetricsClient (from `forEntity`)
+### BoundMetricsClient
 
 | Method | Description |
 |--------|-------------|
-| `getEntityId()` | Get bound entity ID |
 | `send(name, value, unit, tags?)` | Send single metric |
 | `beginBatch(name, unit)` | Start single-metric batch |
-| `add(value, tags?)` | Add to single-metric batch |
+| `add(value, tags?)` | Add to batch |
 | `beginMultiBatch()` | Start multi-metric batch |
-| `addMetric(name, value, unit, tags?)` | Add to multi-metric batch |
+| `addMetric(name, value, unit, tags?)` | Add metric to batch |
 | `sendBatch()` | Send queued metrics |
 | `endBatch()` | End batch mode |
-| `clearBatch()` | Clear queue |
-| `getBatchSize()` | Get queue size |
-| `getLastError()` | Get last error message |
-| `getLastHttpCode()` | Get last HTTP code |
-| `setDebug(enabled)` | Enable/disable debug |
-
-## Requirements
-
-- Node.js 18.0.0 or higher
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
-## Links
+---
 
-- [LogDot Website](https://logdot.io)
-- [Documentation](https://docs.logdot.io)
-- [GitHub Repository](https://github.com/logdot-io/logdot-node)
+<p align="center">
+  <a href="https://logdot.io">logdot.io</a> •
+  Built with care for developers
+</p>
