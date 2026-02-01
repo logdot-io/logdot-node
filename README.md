@@ -205,6 +205,145 @@ await metricsClient.sendBatch();
 metricsClient.endBatch();
 ```
 
+## Auto-Instrumentation (Next.js)
+
+Automatically capture HTTP requests, database queries, and errors in Next.js apps with zero manual logging code.
+
+### Prerequisites
+
+Install the OpenTelemetry packages alongside the SDK:
+
+```bash
+npm install @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node
+```
+
+### Setup
+
+Create `instrumentation.ts` in your Next.js project root:
+
+```typescript
+export async function register() {
+  const { init } = await import('@logdot-io/sdk/nextjs');
+  init({
+    apiKey: 'ilog_live_YOUR_API_KEY',
+    hostname: 'my-nextjs-app',
+  });
+}
+```
+
+### What Gets Captured
+
+- **HTTP requests** — Incoming requests with method, path, status code, and duration
+- **Fetch calls** — Outgoing HTTP requests to external services
+- **Database queries** — PostgreSQL, MySQL, Redis operations with timing
+- **Errors** — Exceptions with stack traces and request context
+- **Metrics** — Request duration and counts (entity is automatically created/resolved using `entityName`)
+
+### Configuration
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `apiKey` | string | Yes | Your LogDot API key |
+| `hostname` | string | Yes | Identifies this service in logs |
+| `entityName` | string | No | Metrics entity name — automatically created if it doesn't exist (defaults to hostname) |
+| `debug` | boolean | No | Enable debug logging (default: `false`) |
+| `timeout` | number | No | HTTP timeout in ms (default: `5000`) |
+| `captureConsole` | boolean | No | Forward `console.log/warn/error/debug` to LogDot (default: `false`) |
+
+## Log Capture
+
+Automatically forward all `console.log`, `console.info`, `console.warn`, `console.error`, and `console.debug` calls to LogDot. The original console output is preserved — messages still appear in your terminal as usual.
+
+This works in **any Node.js application** (Express, Fastify, Hono, scripts, workers, etc.), not just Next.js.
+
+### Standalone Usage
+
+```typescript
+import { ConsoleCapture } from '@logdot-io/sdk';
+
+const capture = new ConsoleCapture({
+  apiKey: 'ilog_live_YOUR_API_KEY',
+  hostname: 'my-service',
+});
+
+// All console calls are now captured and sent to LogDot
+console.log('This is sent to LogDot');          // severity: info
+console.info('Info message');                    // severity: info
+console.warn('Warning message');                 // severity: warn
+console.error('Error message');                  // severity: error
+console.debug('Debug message');                  // severity: debug
+
+// When shutting down
+capture.shutdown();
+```
+
+### With Next.js
+
+When using the Next.js auto-instrumentation, pass `captureConsole: true`:
+
+```typescript
+// instrumentation.ts
+export async function register() {
+  const { init } = await import('@logdot-io/sdk/nextjs');
+  init({
+    apiKey: 'ilog_live_YOUR_API_KEY',
+    hostname: 'my-nextjs-app',
+    captureConsole: true,
+  });
+}
+```
+
+### How It Works
+
+1. `ConsoleCapture` patches `console.log/info/warn/error/debug` with wrappers
+2. Each call writes to the original console output **and** buffers the message
+3. The buffer is flushed to LogDot every 5 seconds (configurable) or when it reaches 100 entries (configurable)
+4. Messages are sent as a single batch HTTP request for efficiency
+5. A **recursion guard** prevents infinite loops — when the HTTP client's own operations trigger console output during a flush, those calls are silently skipped
+6. Messages longer than 16KB are truncated
+
+### Configuration
+
+```typescript
+const capture = new ConsoleCapture({
+  apiKey: 'ilog_live_YOUR_API_KEY',   // Required
+  hostname: 'my-service',              // Required
+  timeout: 5000,                       // HTTP timeout in ms (default: 5000)
+  flushIntervalMs: 5000,               // How often to flush buffer (default: 5000)
+  maxBufferSize: 100,                  // Auto-flush when buffer reaches this size (default: 100)
+});
+```
+
+### Tags
+
+All captured console logs include `{ source: "console" }` in their tags, so you can filter them from manually sent logs in the LogDot dashboard.
+
+### Shutdown
+
+Always call `capture.shutdown()` before your process exits. This restores the original console methods and sends any remaining buffered logs.
+
+```typescript
+process.on('SIGTERM', () => {
+  capture.shutdown();
+  process.exit(0);
+});
+```
+
+### OTel Shutdown
+
+When using the Next.js auto-instrumentation, call `shutdown()` before your process exits to flush all pending spans and metrics. OTel batches metric exports on a 60-second interval, so without an explicit shutdown, data may be lost.
+
+```typescript
+import { init, shutdown } from '@logdot-io/sdk/nextjs';
+
+init({ apiKey: '...', hostname: 'my-app' });
+
+// Before exit
+await shutdown();
+```
+
+The `init()` function also registers `SIGTERM` and `SIGINT` handlers that call `shutdown()` automatically, so long-running servers (like Next.js) will flush on graceful termination.
+
 ## API Reference
 
 ### LogDotLogger
@@ -240,6 +379,46 @@ metricsClient.endBatch();
 | `addMetric(name, value, unit, tags?)` | Add metric to batch |
 | `sendBatch()` | Send queued metrics |
 | `endBatch()` | End batch mode |
+
+### Auto-Instrumentation (nextjs)
+
+| Function | Description |
+|----------|-------------|
+| `init(config)` | Start OTel auto-instrumentation |
+| `shutdown()` | Flush pending spans/metrics and stop the OTel SDK |
+
+### ConsoleCapture
+
+| Method | Description |
+|--------|-------------|
+| `new ConsoleCapture(config)` | Start capturing console output |
+| `shutdown()` | Restore console methods and flush remaining buffer |
+
+## Examples
+
+Create a `.env` file in the repo root with your API key:
+
+```
+LOGDOT_API_KEY=ilog_live_YOUR_API_KEY
+```
+
+### Core SDK test app
+
+Tests logging, metrics, context, and batch operations:
+
+```bash
+cd node
+npx tsx examples/test-app.ts
+```
+
+### Hooks test app (OTel + Console Capture)
+
+Tests Next.js auto-instrumentation (OTel spans/metrics) and console capture:
+
+```bash
+cd node
+npx tsx examples/test-hooks.ts
+```
 
 ## License
 

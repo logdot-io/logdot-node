@@ -46,6 +46,10 @@ export { LogDotLogger } from './logger';
 // Metrics
 export { LogDotMetrics, BoundMetricsClient } from './metrics';
 
+// Console capture
+export { ConsoleCapture } from './console-capture';
+export type { ConsoleCaptureConfig } from './console-capture';
+
 // HTTP client (for advanced usage)
 export { HttpClient, BASE_LOGS_URL, BASE_METRICS_URL } from './http';
 
